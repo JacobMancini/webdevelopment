@@ -18,22 +18,24 @@
                     <input :id="key" type="text" value = 0 style="width: 40px">
                 </td>
             </tr>
+            
         </table>
         <br>
         <table id = 'plotChange'>
                 <tr>
-                    <td> <button v-on:click="changeSize">Change Width</button></td>
-                    <td> <input type ="text" name="plotWidth" v-model="plotWidth" style="width: 30px;"> metres </td>
+                    <td> <button v-on:click="changeSize">Change Plot Size (metres)</button></td>
+                    <td>Width: <input type ="text" name="plotWidth" v-model="plotWidth" style="width: 30px;"> </td>
+                    <td>Height: <input type ="text" name="plotHeight" v-model="plotHeight" style="width: 30px;"> </td>
                 </tr>
                 <tr>
-                    <td> <button v-on:click="changeSize">Change Height</button> </td>
-                    <td> <input type ="text" name="plotHeight" v-model="plotHeight" style="width: 30px;"> metres </td>
+                    
                 </tr>
             </table>
             <v-stage :config = "configKonva">
                 <v-layer>
                     <v-rect :config = "configPlot"></v-rect>
                     <v-circle :config = "configCircle"></v-circle>
+                    <v-circle :config = "Object.Circle"></v-circle>
                 </v-layer>
             </v-stage>
     </div>
@@ -83,40 +85,43 @@ export default {
     },
     mounted () {
     },
+    
     methods: {
         // +1 from plant count
         add (id) {
             document.getElementById(id).value = Number(document.getElementById(id).value) + 1;
+            this.createCircle(id);
         },
         // -1 from plant count
         remove (id) {
-            if (document.getElementById(id).value > 0)
-            document.getElementById(id).value = Number(document.getElementById(id).value) - 1;
+            if (document.getElementById(id).value > 0){
+                document.getElementById(id).value = Number(document.getElementById(id).value) - 1;
+                this.plantCircles.splice(this.plantCircles.lastIndexOf(id), 1) 
+                // Removing last instance of plant from array
+            }
         },
 
          // Resizing garden
          changeSize () {
             this.configPlot.width = this.plotWidth * 100
             this.configPlot.height = this.plotHeight * 100
-            this.createCircle()
         },
 
-        createCircle () {
-           /* for (this.plants.id in this.plants) {
-                console.log(this.plantCircles)
+        createCircle (id) {
+            for (id in this.plants) {
+                // Need correct syntax for instantiating new configCircle
+                Object.Circle = new this.configCircle({
+                    radius: this.plants.radius,
+                    x: Math.random() * (this.configPlot.width - 10),
+                    y: Math.random() * (this.configPlot.height - 10),
+                    fill: this.plants.colour,
+                    stroke: "black",
+                    strokeWidth: 3,
+                    draggable: true,
+                });
+
+                this.plantCircles.push(Object.Circle, id)
             }
-            
-            
-            this.configCircle.radius = 20
-            this.configCircle.x = 600
-            this.configCircle.y =  600
-            this.configCircle.fill = "red",
-            this.configCircle.stroke = "black",
-            this.configCircle.strokeWidth = 5,
-             */   
-            
-               
-                
             
             
         }
@@ -125,16 +130,14 @@ export default {
 </script>
 
 <style>
-li {
-    display: inline-block;
-}
+
 
 table {
     margin-left: auto;
     margin-right: auto;
     
-    
 }
+
 
 
 </style>
