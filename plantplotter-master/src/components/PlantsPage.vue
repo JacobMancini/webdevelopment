@@ -18,11 +18,6 @@
                     <input :id="key" type="text" value = 0 style="width: 40px">
                 </td>
             </tr>
-            <tr>
-                <td v-for="(value, key, index) in plantCircles" :key="index">
-                    <v-circle :config = "configCircle"></v-circle>
-                </td>
-            </tr>
         </table>
         <br>
         <table id = 'plotChange'>
@@ -107,11 +102,11 @@ export default {
         },
 
         createCircle () {
-            for (this.plants.id in this.plants) {
+           /* for (this.plants.id in this.plants) {
                 console.log(this.plantCircles)
             }
             
-            /*
+            
             this.configCircle.radius = 20
             this.configCircle.x = 600
             this.configCircle.y =  600
