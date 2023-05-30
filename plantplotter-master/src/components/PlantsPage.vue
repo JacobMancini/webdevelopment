@@ -7,9 +7,8 @@
                 </td>
             </tr>
             <tr>
-                <td v-for="(value, key, index) in plants" :key="index" style="padding-left: 5px; padding-right: 5px;" >
+                <td v-for="(value, key, index) in plants" :key="index" style="padding-left: 5px; padding-right: 5px;">
                     <button v-on:click="add(key)">+1 {{ plants[key].plant }}</button> 
-                    <!-- Randomly generate plant in garden function needs to be added to onclick -->
                     <button v-on:click="remove(key)">-1</button>
                 </td>
             </tr>
@@ -27,17 +26,14 @@
                     <td>Width: <input type ="text" name="plotWidth" v-model="plotWidth" style="width: 30px;"> </td>
                     <td>Height: <input type ="text" name="plotHeight" v-model="plotHeight" style="width: 30px;"> </td>
                 </tr>
-                <tr>
-                    
-                </tr>
+                
             </table>
-            <v-stage :config = "configKonva">
-                <v-layer>
-                    <v-rect :config = "configPlot"></v-rect>
-                    <v-circle :config = "configCircle"></v-circle>
-                    <v-circle :config = "Object.Circle"></v-circle>
-                </v-layer>
-            </v-stage>
+        <v-stage :config = "configKonva">
+            <v-layer>
+                <v-rect :config = "configPlot"></v-rect>
+                <v-circle v-for="circle in plantCircles" :key="circle.id"  :config = "circle"></v-circle>
+            </v-layer>
+        </v-stage>
     </div>
 </template>
 
@@ -50,8 +46,8 @@ export default {
             plants: plantsInfo,
             
             // Default dimensions of garden
-            plotWidth: 3.5,
-            plotHeight: 3,
+            plotWidth: 5,
+            plotHeight: 4.5,
 
             // Array of circles for plants    
             plantCircles: [],
@@ -75,8 +71,8 @@ export default {
             configPlot: {
                 x: 10,
                 y: 10,
-                width: 350,
-                height: 300,
+                width: 500,
+                height: 450,
                 fill: "brown",
                 stroke: "black",
                 strokeWidth: 3,
@@ -108,25 +104,18 @@ export default {
         },
 
         createCircle (id) {
-            for (id in this.plants) {
-                // Need correct syntax for instantiating new configCircle
-                Object.Circle = new this.configCircle({
-                    radius: this.plants.radius,
-                    x: Math.random() * (this.configPlot.width - 10),
-                    y: Math.random() * (this.configPlot.height - 10),
-                    fill: this.plants.colour,
-                    stroke: "black",
-                    strokeWidth: 3,
-                    draggable: true,
-                });
-
-                this.plantCircles.push(Object.Circle, id)
-            }
-            
-            
+            this.plantCircles.push({
+                    "radius": this.plants[id].radius,
+                    "x": Math.floor(Math.random() * (this.configPlot.width - this.plants[id].radius)),
+                    "y": Math.floor(Math.random() * (this.configPlot.height - this.plants[id].radius)),
+                    "fill": this.plants[id].colour,
+                    "stroke": "black",
+                    "strokeWidth": 2,
+                    "draggable": true,
+                }); 
+            }    
         }
     }
-}
 </script>
 
 <style>
@@ -135,9 +124,12 @@ export default {
 table {
     margin-left: auto;
     margin-right: auto;
+
     
 }
 
-
+button {
+    cursor: pointer;
+}
 
 </style>
