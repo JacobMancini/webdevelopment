@@ -14,26 +14,34 @@
             </tr>
             <tr>
                 <td v-for="(value, key, index) in plants" :key="index">
-                    <input :id="key" type="text" value = 0 style="width: 40px">
+                    <input :id="key" type="text" v-model="plantCount" style="width: 40px">
                 </td>
             </tr>
-            
         </table>
         <br>
         <table id = 'plotChange'>
-                <tr>
-                    <td> <button v-on:click="changeSize">Change Plot Size (metres)</button></td>
-                    <td>Width: <input type ="text" name="plotWidth" v-model="plotWidth" style="width: 30px;"> </td>
-                    <td>Height: <input type ="text" name="plotHeight" v-model="plotHeight" style="width: 30px;"> </td>
-                </tr>
-                
-            </table>
-        <v-stage :config = "configKonva">
-            <v-layer>
-                <v-rect :config = "configPlot"></v-rect>
-                <v-circle v-for="circle in plantCircles" :key="circle.id"  :config = "circle"></v-circle>
-            </v-layer>
-        </v-stage>
+            <tr>
+                <td><button v-on:click="changeSize">Change Plot Size (metres)</button></td>
+                <td>Width: <input type ="text" name="plotWidth" v-model="plotWidth" style="width: 30px;" @input=changeSize> </td>
+                <td>Height: <input type ="text" name="plotHeight" v-model="plotHeight" style="width: 30px;" @input=changeSize> </td>
+            </tr>
+            <tr>
+                <td>
+                    <button v-on:click="clearPlot()">Clear Plot</button>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <div style="text-align: center; width: 100%">
+            <div style="display: inline-block;">
+                <v-stage :config = "configKonva" >
+                    <v-layer>
+                        <v-rect :config = "configPlot"></v-rect>
+                        <v-circle v-for="circle in plantCircles" :key="circle.id" :config = "circle"></v-circle>  
+                    </v-layer>
+                </v-stage>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -45,23 +53,26 @@ export default {
         return {
             plants: plantsInfo,
             
+            drag: true,
+            plantCount: 0,
+
             // Default dimensions of garden
-            plotWidth: 5,
-            plotHeight: 4.5,
+            plotWidth: 6,
+            plotHeight: 4,
 
             // Array of circles for plants    
             plantCircles: [],
 
             configKonva: {
-                width: 1510,
-                height: 1510,
+                width: 600,
+                height: 400,
             },
 
             // Default circle for plants. Will change dimensions of default circle to desired plant upon plant creation
             configCircle: {
                 radius: 20,
-                x: 600,
-                y: 600,
+                x: 0,
+                y: 0,
                 fill: "red",
                 stroke: "black",
                 strokeWidth: 3,
@@ -69,10 +80,10 @@ export default {
             },
             // Garden size
             configPlot: {
-                x: 10,
-                y: 10,
-                width: 500,
-                height: 450,
+                x: 0,
+                y: 0,
+                width: 600,
+                height: 400,
                 fill: "brown",
                 stroke: "black",
                 strokeWidth: 3,
@@ -80,6 +91,7 @@ export default {
         }
     },
     mounted () {
+        
     },
     
     methods: {
@@ -92,29 +104,49 @@ export default {
         remove (id) {
             if (document.getElementById(id).value > 0){
                 document.getElementById(id).value = Number(document.getElementById(id).value) - 1;
-                this.plantCircles.splice(this.plantCircles.lastIndexOf(id), 1) 
+                this.plantCircles.splice(this.plantCircles.lastIndexOf(this.plantCircles.id), 1) 
                 // Removing last instance of plant from array
             }
         },
 
-         // Resizing garden
-         changeSize () {
-            this.configPlot.width = this.plotWidth * 100
-            this.configPlot.height = this.plotHeight * 100
+        // Resizing garden and canvas
+        changeSize () {
+            this.configKonva.width = this.configPlot.width = this.plotWidth * 100
+            this.configKonva.height = this.configPlot.height = this.plotHeight * 100
+        },
+
+        clearPlot () {
+            this.plantCircles = []
+            this.plantCount = 0
         },
 
         createCircle (id) {
             this.plantCircles.push({
                     "radius": this.plants[id].radius,
-                    "x": Math.floor(Math.random() * (this.configPlot.width - this.plants[id].radius)),
-                    "y": Math.floor(Math.random() * (this.configPlot.height - this.plants[id].radius)),
+                    "x": Math.floor(Math.random() * (this.configPlot.width - 2 * (this.plants[id].radius)) + this.plants[id].radius),
+                    "y": Math.floor(Math.random() * (this.configPlot.height - 2 * (this.plants[id].radius)) + this.plants[id].radius),
                     "fill": this.plants[id].colour,
                     "stroke": "black",
                     "strokeWidth": 2,
                     "draggable": true,
+                    "id": this.plants[id].id,
                 }); 
-            }    
-        }
+            },  
+
+        dragging () { // Using a while loop and drag bool freezes the application. Can I call dragging somewhere other than v-circle?
+            if (this.plantCircles.x < (this.configPlot.width - this.plantCircles.radius) && this.plantCircles.y < (this.configPlot.height - this.plantCircles.radius)) {
+            this.plantCircles.draggable = true
+            }
+            else {
+                this.plantCircles.draggable = false
+                this.plantCircles.x = this.plantCircles.x - this.plantCircles.radius
+                this.plantCircles.y = this.plantCircles.y - this.plantCircles.radius
+            }
+                
+            }
+            
+
+        }, 
     }
 </script>
 
