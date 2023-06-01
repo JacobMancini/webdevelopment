@@ -104,7 +104,7 @@ export default {
         remove (id) {
             if (document.getElementById(id).value > 0){
                 document.getElementById(id).value = Number(document.getElementById(id).value) - 1;
-                this.plantCircles.splice(this.plantCircles.lastIndexOf(this.plantCircles.id), 1) 
+                this.plantCircles.splice(this.plantCircles.lastIndexOf(this.plants[id].id), 1) 
                 // Removing last instance of plant from array
             }
         },
@@ -117,7 +117,14 @@ export default {
 
         clearPlot () {
             this.plantCircles = []
-            this.plantCount = 0
+            this.plantCount = -1
+            if (this.plantCount == -1) {
+                this.plantCount = 0
+            }
+            // For some reason setting plantCount to zero does not set the counter of any plants that were modified. i.e. If Pumpkin was four, it would not reset.
+            // Setting plantCount to any other number than zero does set all counters to that number, regardless of the number already displayed in the counter.
+            // Hence, the above code sets plantCount to -1 and then 0.
+
         },
 
         createCircle (id) {
