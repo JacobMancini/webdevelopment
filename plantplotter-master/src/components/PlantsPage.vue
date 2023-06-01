@@ -104,8 +104,12 @@ export default {
         remove (id) {
             if (document.getElementById(id).value > 0){
                 document.getElementById(id).value = Number(document.getElementById(id).value) - 1;
-                this.plantCircles.splice(this.plantCircles.lastIndexOf(this.plants[id].id), 1) 
+                console.log(this.plantCircles.id)
+                if ((document.getElementById(id).key = this.plants[id].id)) { // This line is confirming that the key matches the plant id
+                    this.plantCircles.splice(this.plantCircles.lastIndexOf(id), 1) 
                 // Removing last instance of plant from array
+                }
+                
             }
         },
 
