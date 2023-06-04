@@ -26,6 +26,9 @@
                 <td>Width: <input type ="text" name="plotWidth" v-model="plotWidth" style="width: 30px;" @input=changeSize></td>
                 <td>Height: <input type ="text" name="plotHeight" v-model="plotHeight" style="width: 30px;" @input=changeSize></td>
             </tr>
+        </table>
+        <br>
+        <table id="plotButtons">
             <tr>
                 <td>
                     <button v-on:click="clearPlot()">Clear Plot</button>
@@ -61,25 +64,13 @@ export default {
             plotWidth: 6,
             plotHeight: 4,
 
-            // Array of circles for plants    
+            // Array of circles for plants 
             plantCircles: [],
             plantOrder: [],
 
             configKonva: {
                 width: 600,
                 height: 400,
-            },
-
-            // Default circle for plants. Will change dimensions of default circle to desired plant upon plant creation
-            configCircle: {
-                radius: 20,
-                x: 0,
-                y: 0,
-                fill: "red",
-                stroke: "black",
-                strokeWidth: 3,
-                draggable: true,
-                id: null,
             },
 
             // Garden
@@ -94,10 +85,7 @@ export default {
             },
         }
     },
-    mounted () {
-        
-    },
-    
+
     methods: {
         // +1 from plant count
         add (plantId) {
@@ -114,7 +102,7 @@ export default {
                 this.plantCircles.splice(indexOfPlant, 1);
                 // Removing last instance of plant from array. plantOrder is an array that stores the plantId of each plant. 
                 // Upon removal, I am locating the most recently created plantId and am setting that to indexOfPlant, altering the key of plantCircles and plantOrder
-                // and then removing that from plantOrder and plantCircles
+                // and then removing the latest instance of that and hence, plant, from plantOrder and plantCircles
             }
         },
 
@@ -139,18 +127,17 @@ export default {
 
         createCircle (plantId) {
             this.plantCircles.push({
-                    "radius": this.plants[plantId].radius,
-                    "x": Math.floor(Math.random() * (this.configPlot.width - 2 * (this.plants[plantId].radius)) + this.plants[plantId].radius),
-                    "y": Math.floor(Math.random() * (this.configPlot.height - 2 * (this.plants[plantId].radius)) + this.plants[plantId].radius),
-                    "fill": this.plants[plantId].colour,
-                    "stroke": "black",
-                    "strokeWidth": 2,
-                    "draggable": true,
-                    "id": String(this.plants[plantId].id), // Konva does not like id being a number
-                    // "id:" this.plants[plantId].id returns:
-                    // Konva warning: 9 is a not valid value for "id" attribute. The value should be a string.
-                }); 
-            },  
+                "radius": this.plants[plantId].radius,
+                "x": Math.floor(Math.random() * (this.configPlot.width - 2 * (this.plants[plantId].radius)) + this.plants[plantId].radius),
+                "y": Math.floor(Math.random() * (this.configPlot.height - 2 * (this.plants[plantId].radius)) + this.plants[plantId].radius),
+                "name": this.plants[plantId].plant,
+                "fill": this.plants[plantId].colour,
+                "stroke": "black",
+                "strokeWidth": 2,
+                "draggable": true,
+                "id": String(this.plants[plantId].id), 
+            }); 
+        },  
 
       /*  dragging () { // Using a while loop and drag bool freezes the application. Can I call dragging somewhere other than v-circle?
             if (this.plantCircles.x < (this.configPlot.width - this.plantCircles.radius) && this.plantCircles.y < (this.configPlot.height - this.plantCircles.radius)) {
@@ -186,18 +173,26 @@ h1 {
     margin-right: auto;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-size: 36px;
+    color: rgb(70, 100, 10);
 }
 
 
 table {
     margin-left: auto;
     margin-right: auto;
+    
 }
 
-#plotChange, td{
-    font-size: 16px;
+#plotChange {
+    font-size: 18px;
     font-family: Arial;
     font-weight: bold;
+    color: rgb(70, 100, 10);
+}
+
+#plantClick {
+    background-color: rgb(255, 255, 255, 0.2);
+    border-radius: 25px;
 }
 
 button {
