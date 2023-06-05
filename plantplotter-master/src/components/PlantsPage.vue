@@ -1,20 +1,20 @@
 <template>
-    <div id="plantPlotter">
+    <div>
         <h1>Plant Plotter</h1>
         <table id="plantClick">
             <tr>
-                <td v-for="item in plants" :key="item.plant">
+                <td v-for="item in filteredPlants" :key="item.plant">
                     <img :src=item.image style="width: 85px; height: 85px;">
                 </td>
             </tr>
             <tr>
-                <td v-for="(value, key, index) in plants" :key="index" style="padding-left: 5px; padding-right: 5px;">
-                    <button v-on:click="add(key)">+1 {{ plants[key].plant }}</button> 
+                <td v-for="(value, key, index) in filteredPlants" :key="index" style="padding-left: 5px; padding-right: 5px;">
+                    <button v-on:click="add(key)">+1 {{ filteredPlants[key].plant }}</button> 
                     <button v-on:click="remove(key)">-1</button>
                 </td>
             </tr>
             <tr>
-                <td v-for="(value, key, index) in plants" :key="index">
+                <td v-for="(value, key, index) in filteredPlants" :key="index">
                     <input :id="key" type="text" v-model="plantCount" style="width: 40px" readonly>
                 </td>
             </tr>
@@ -28,10 +28,20 @@
             </tr>
         </table>
         <br>
-        <table id="plotButtons">
+        <table id="plotCustomise">
             <tr>
                 <td>
                     <button v-on:click="clearPlot()">Clear Plot</button>
+                </td>
+                <td>
+                    <select v-model="currentSeason">
+                        <option value="null" selected hidden>Choose a Season</option>
+                        <option value="Summer">Summer</option>
+                        <option value="Autumn">Autumn</option>
+                        <option value="Winter">Winter</option>
+                        <option value="Spring">Spring</option>
+                        <option value="none">None</option>
+                    </select>
                 </td>
             </tr>
         </table>
@@ -41,7 +51,7 @@
                 <v-stage :config = "configKonva" >
                     <v-layer>
                         <v-rect :config = "configPlot"></v-rect>
-                        <v-circle v-for="circle in plantCircles" :key="circle.id" :config = "circle"></v-circle>  
+                        <v-circle v-for="circle in plantCircles" :key="circle.id" :config = "circle" @dragend="dragging"></v-circle>  
                     </v-layer>
                 </v-stage>
             </div>
@@ -56,9 +66,9 @@ export default {
     data () {
         return {
             plants: plantsInfo,
-            
-            drag: true,
             plantCount: 0,
+            currentSeason: null,
+            previousSeason: null,
 
             // Default dimensions of garden
             plotWidth: 6,
@@ -86,12 +96,50 @@ export default {
         }
     },
 
+    computed: {
+        filteredPlants() {
+            if (this.currentSeason === "none") {
+                return this.plants;
+            }
+
+            const filtered = {};
+            for (const plantId in this.plants) {
+                const plant = this.plants[plantId];
+                if (plant.season.includes(this.currentSeason) || !this.currentSeason) {
+                    filtered[plantId] = plant;
+                }
+            }
+            return filtered;
+        },
+    },
+    
+    watch: {
+        currentSeason(newSeason) {
+            // Preserving current season's plants when switching to "None"
+            if (this.previousSeason !== "none" && newSeason === "none") {
+                return;
+            }
+
+            this.clearPlot(); // Clearing the plot any other time the season changes
+            this.previousSeason = newSeason
+        }
+    },
+
     methods: {
         // +1 from plant count
         add (plantId) {
-            document.getElementById(plantId).value = Number(document.getElementById(plantId).value) + 1;
-            this.createCircle(plantId);
-            this.plantOrder.push(plantId);
+            // Plants can be placed by default or only certain ones if a season is selected
+            // Update to remove plants that don't grow in the season from the table of plants
+            const correctSeason = this.filteredPlants[plantId].season;
+            if (correctSeason.includes(this.currentSeason) || this.currentSeason == null || this.currentSeason == "none") {
+                document.getElementById(plantId).value = Number(document.getElementById(plantId).value) + 1;
+                this.createCircle(plantId);
+                this.plantOrder.push(plantId);
+            }
+            else
+            // Update to include text that appears on screen with this message
+            console.log("This plant does not grow in this season!")
+            
         },
         // -1 from plant count
         remove (plantId) {
@@ -125,34 +173,35 @@ export default {
 
         },
 
-        createCircle (plantId) {
+        createCircle (plantId) { 
             this.plantCircles.push({
-                "radius": this.plants[plantId].radius,
-                "x": Math.floor(Math.random() * (this.configPlot.width - 2 * (this.plants[plantId].radius)) + this.plants[plantId].radius),
-                "y": Math.floor(Math.random() * (this.configPlot.height - 2 * (this.plants[plantId].radius)) + this.plants[plantId].radius),
-                "name": this.plants[plantId].plant,
-                "fill": this.plants[plantId].colour,
-                "stroke": "black",
-                "strokeWidth": 2,
-                "draggable": true,
-                "id": String(this.plants[plantId].id), 
+            "x": Math.floor(Math.random() * (this.configPlot.width - 2 * this.plants[plantId].radius) + this.plants[plantId].radius),
+            "y": Math.floor(Math.random() * (this.configPlot.height - 2 * this.plants[plantId].radius) + this.plants[plantId].radius),
+            "radius": this.plants[plantId].radius,
+            "name": this.plants[plantId].plant,
+            "fill": this.plants[plantId].colour,
+            "stroke": "black",
+            "strokeWidth": 2,
+            "draggable": true,
+            "id": String(this.plants[plantId].id), 
             }); 
+           
+            
         },  
 
-      /*  dragging () { // Using a while loop and drag bool freezes the application. Can I call dragging somewhere other than v-circle?
-            if (this.plantCircles.x < (this.configPlot.width - this.plantCircles.radius) && this.plantCircles.y < (this.configPlot.height - this.plantCircles.radius)) {
-            this.plantCircles.draggable = true
-            }
+        dragging(drag) {
+            // Finding the id of the circle that is being dragged
+            const draggedCircle = this.plantCircles.find((draggedCircle) => draggedCircle.id === drag.target.id());
 
-            else {
-                this.plantCircles.draggable = false
-                this.plantCircles.x = this.plantCircles.x - this.plantCircles.radius
-                this.plantCircles.y = this.plantCircles.y - this.plantCircles.radius
-            }
-                
-            }, */
-            
-         }
+            // Getting new x and y position of circle and ensuring the circle stays inside the garden
+            const newX = Math.min(Math.max(draggedCircle.radius, drag.target.x()), this.configPlot.width - draggedCircle.radius);
+            const newY = Math.min(Math.max(draggedCircle.radius, drag.target.y()), this.configPlot.height - draggedCircle.radius);
+
+            // Updating x and y positions
+            drag.target.setAttrs({x: newX, y: newY});      
+        },
+           
+        }
     }
 </script>
 
