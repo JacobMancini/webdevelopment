@@ -102,14 +102,14 @@ export default {
                 return this.plants;
             }
 
-            const filtered = {};
+            const filteredPlant = {};
             for (const plantId in this.plants) {
                 const plant = this.plants[plantId];
                 if (plant.season.includes(this.currentSeason) || !this.currentSeason) {
-                    filtered[plantId] = plant;
+                    filteredPlant[plantId] = plant;
                 }
             }
-            return filtered;
+            return filteredPlant;
         },
     },
     
