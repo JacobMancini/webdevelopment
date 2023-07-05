@@ -99,7 +99,7 @@ export default {
     
     computed: {
         seasonalPlants(plantId) {
-            if (this.currentSeason === "none") {
+            if (this.currentSeason == "none") {
                 return this.plants;
             }
             // Filtering plants based on current season
@@ -184,13 +184,9 @@ export default {
 
             drag.target.setAttrs({
                 x: newX,
-                y: newY,
-                
+                y: newY,    
             }); 
-            console.log(newX, newY)     
-
         },
-         
         
         }
     }
