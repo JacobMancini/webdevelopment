@@ -1,6 +1,6 @@
 <template>
   <div>
-      <!--<table>
+      <table>
           <tr>
               <td v-for="item in plants" :key="item.plant">
                   <img :src=item.image style="width: 85px; height: 85px;">
@@ -8,9 +8,9 @@
           </tr>
           <tr>
               <td v-for="(value, key, index) in plants" :key="index" style="padding-left: 5px; padding-right: 5px;" >
-                  <button v-on:click="add(key)">+1 {{ plants[key].plant }}</button> -->
+                  <button v-on:click="add(key)">+1 {{ plants[key].plant }}</button> 
                   <!-- Randomly generate plant in garden function needs to be added to onclick -->
-              <!--    <button v-on:click="remove(key)">-1</button>
+                  <button v-on:click="remove(key)">-1</button>
               </td>
           </tr>
           <tr>
@@ -18,7 +18,7 @@
                   <input :id="key" type="text" value = 0 style="width: 40px">
               </td>
           </tr>
-      </table> -->
+      </table> 
 
       <table id = 'plotChange'>
         <tr>
