@@ -143,8 +143,10 @@ export default {
 
         // Resizing garden and canvas
         changeSize () {
-            this.configKonva.width = this.configPlot.width = this.plotWidth * 100
-            this.configKonva.height = this.configPlot.height = this.plotHeight * 100
+            this.configPlot.width = this.plotWidth * 100;
+            this.configKonva.width = this.configPlot.width;
+            this.configPlot.height = this.plotHeight * 100;
+            this.configKonva.height = this.configPlot.height;
         },
 
         clearPlot () {
@@ -176,7 +178,7 @@ export default {
 
         dragging(drag) {
             // Finding the id of the circle that is being dragged
-            const circle = this.plantCircles.find((circle) => circle.id === drag.target.id());
+            const circle = this.plantCircles.find((circle) => circle.id == drag.target.id());
 
             // Getting new x and y position of circle and ensuring the circle stays inside the garden
             const newX = Math.min(Math.max(circle.radius, drag.target.x()), this.configPlot.width - circle.radius);
@@ -186,6 +188,7 @@ export default {
                 x: newX,
                 y: newY,    
             }); 
+
         },
         
         }

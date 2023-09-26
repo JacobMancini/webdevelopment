@@ -1,0 +1,99 @@
+[
+    {
+        "id": 1,
+        "plant": "Broccoli",
+        "colour": "Green",
+        "image": "https://cdn-icons-png.flaticon.com/512/2909/2909841.png",
+        "radius": 45,
+        "season": "Autumn"
+    },
+    {
+        "id": 2,
+        "plant": "Carrot",
+        "colour": "OrangeRed",
+        "image": "https://cdn-icons-png.flaticon.com/512/2909/2909782.png",
+        "radius": 5,
+        "season": "Autumn"
+    },
+    {
+        "id": 3,
+        "plant": "Eggplant",
+        "colour": "Indigo",
+        "image": "https://cdn-icons-png.flaticon.com/512/2909/2909877.png",
+        "radius": 45,
+        "season": "Spring"
+
+    },
+    {
+        "id": 4,
+        "plant": "Tomato",
+        "colour": "Red",
+        "image": "https://cdn-icons-png.flaticon.com/512/2909/2909922.png",
+        "radius": 90,
+        "season": "Summer"
+    },
+    {
+        "id": 5,
+        "plant": "Pumpkin",
+        "colour": "DarkOrange",
+        "image": "https://cdn-icons-png.flaticon.com/512/2909/2909916.png",
+        "radius": 150,
+        "season": "Summer"
+    },
+    {
+        "id": 6,
+        "plant": "Radish",
+        "colour": "Crimson",
+        "image": "https://cdn-icons-png.flaticon.com/512/2909/2909778.png",
+        "radius": 5,
+        "season": "Autumn"
+    },
+    {
+        "id": 7,
+        "plant": "Corn",
+        "colour": "Gold",
+        "image": "https://cdn-icons-png.flaticon.com/512/4778/4778606.png",
+        "radius": 25,
+        "season": "Spring"
+    },
+    {
+        "id": 8,
+        "plant": "Cauliflower",
+        "colour": "FloralWhite",
+        "image": "https://cdn-icons-png.flaticon.com/512/2909/2909861.png",
+        "radius": 45,
+        "season": "Summer"
+    },
+    {
+        "id": 9,
+        "plant": "Garlic",
+        "colour": "Bisque",
+        "image": "https://cdn-icons-png.flaticon.com/512/2909/2909878.png",
+        "radius": 10,
+        "season": "Winter"
+    },
+    {
+        "id": 10,
+        "plant": "Capsicum",
+        "colour": "DarkGreen",
+        "image": "https://cdn-icons-png.flaticon.com/512/2909/2909814.png",
+        "radius": 45,
+        "season": "Winter"
+    },
+    {
+        "id": 11,
+        "plant": "Beetroot",
+        "colour": "Maroon",
+        "image": "https://cdn-icons-png.flaticon.com/512/3480/3480532.png",
+        "radius": 7.5,
+        "season": "Spring"
+    },
+    {
+        "id": 12,
+        "plant": "Potato",
+        "colour":"BurlyWood",
+        "image": "https://cdn-icons-png.flaticon.com/512/3480/3480699.png",
+        "radius": 35,
+        "season": "Winter"
+    }
+]
