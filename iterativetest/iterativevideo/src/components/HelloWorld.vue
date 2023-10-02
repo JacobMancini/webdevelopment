@@ -2,16 +2,15 @@
   <div>
       <table>
           <tr>
-              <td v-for="item in plants" :key="item.plant">
+              <td v-for="item in plants" :key="item.plants">
                   <img :src=item.image style="width: 85px; height: 85px;">
               </td>
           </tr>
           <tr>
               <td v-for="(value, key, index) in plants" :key="index" style="padding-left: 5px; padding-right: 5px;" >
                   <button v-on:click="add(key)">+1 {{ plants[key].plant }}</button> 
-                  <!-- Randomly generate plant in garden function needs to be added to onclick -->
                   <button v-on:click="remove(key)">-1</button>
-              </td>
+              </td> 
           </tr>
           <tr>
               <td v-for="(value, key, index) in plants" :key="index">
@@ -21,16 +20,10 @@
       </table> 
 
       <table id = 'plotChange'>
-        <tr>
-          <label style="font-family: 'Comic Sans MS'; font-weight: bold;">Garden Dimension Changer</label>
-        </tr>
           <tr>
-              <td> <button v-on:click="changeSize">Change Width</button></td>
-              <td> <input type ="text" name="plotWidth" v-model="plotWidth" style="width: 30px;"> metres </td>
-          </tr>
-          <tr>
-              <td> <button v-on:click="changeSize">Change Height</button> </td>
-              <td> <input type ="text" name="plotHeight" v-model="plotHeight" style="width: 30px;"> metres </td>
+            <td><label>Change Plot Size (metres):</label></td>
+            <td>Width: <input type ="text" name="plotWidth" v-model="plotWidth" style="width: 30px;" @input=changeSize></td>
+            <td>Height: <input type ="text" name="plotHeight" v-model="plotHeight" style="width: 30px;" @input=changeSize></td>
           </tr>
       </table>
       <br>
@@ -39,6 +32,7 @@
             <v-stage :config = "configKonva">
                 <v-layer>
                     <v-rect :config = "configPlot"></v-rect>
+                    <v-circle v-for="circle in plantCircles" :key="circle.id"  :config = "circle"></v-circle>
                 </v-layer>
             </v-stage>
         </div>
@@ -48,67 +42,145 @@
 
 <script>
 import plantsInfo from "../plants.json"
+
 export default {
     data () {
         return {
             plants: plantsInfo,
-            countStuff: [],
+            
+            plantCount: 0,
+            currentSeason: null,
+
             // Default dimensions of garden
-            plotWidth: 3.5,
-            plotHeight: 3,
-            // Array of circles for plants    
+            plotWidth: 6,
+            plotHeight: 4,
+
+            // Array of circles for plants 
             plantCircles: [],
+            plantOrder: [],
+
             configKonva: {
-                width: 1510,
-                height: 1510,
+                width: 600,
+                height: 400,
             },
-            // Default circle for plants. Will change dimensions of default circle to desired plant upon plant creation
-            configCircle: {
-                radius: 20,
-                x: 600,
-                y: 600,
-                fill: "red",
-                stroke: "black",
-                strokeWidth: 5,
-                draggable: true,
-            },
-            // Garden size
+
+            // Garden
             configPlot: {
-                x: 10,
-                y: 10,
-                width: 350,
-                height: 300,
-                fill: "brown",
+                x: 0,
+                y: 0,
+                width: 600,
+                height: 400,
+                fill: "rgb(175, 155, 125)",
                 stroke: "black",
                 strokeWidth: 3,
             },
         }
     },
-    mounted () {
+    
+    computed: {
+        seasonalPlants(plantId) {
+            if (this.currentSeason == "none") {
+                return this.plants;
+            }
+            // Filtering plants based on current season
+            const seasonalPlant = {};
+            for (plantId in this.plants) {
+                if (this.plants[plantId].season.includes(this.currentSeason) || !this.currentSeason) {
+                    seasonalPlant[plantId] = this.plants[plantId];
+                }
+            }
+            return seasonalPlant;
+            
+        },
     },
+
+    watch: {
+        currentSeason () {
+            this.clearPlot()
+            // Clearing the plot when the season changes
+        }
+    },
+
     methods: {
         // +1 from plant count
-        add (id) {
-            document.getElementById(id).value = Number(document.getElementById(id).value) + 1;
+        add (plantId) {
+            document.getElementById(plantId).value = Number(document.getElementById(plantId).value) + 1;
+            this.createCircle(plantId);
+            this.plantOrder.push(plantId);
         },
         // -1 from plant count
-        remove (id) {
-            if (document.getElementById(id).value > 0)
-            document.getElementById(id).value = Number(document.getElementById(id).value) -1;
+        remove (plantId) {
+            if (document.getElementById(plantId).value > 0){
+                document.getElementById(plantId).value = Number(document.getElementById(plantId).value) - 1;
+                const indexOfPlant = this.plantOrder.lastIndexOf(plantId);
+                this.plantOrder.splice(indexOfPlant, 1);
+                this.plantCircles.splice(indexOfPlant, 1);
+                // Removing last instance of plant from array. plantOrder is an array that stores the plantId of each plant. 
+                // Upon removal, I am locating the most recently created plantId and am setting that to indexOfPlant, altering the key of plantCircles and plantOrder
+                // and then removing the latest instance of that and hence, plant, from plantOrder and plantCircles
+            }
         },
-         // Resizing garden
-         changeSize () {
-            this.configPlot.width = this.plotWidth * 100
-            this.configPlot.height = this.plotHeight * 100
-            this.createCircle()
+
+        // Resizing garden and canvas
+        changeSize () {
+            this.configPlot.width = this.plotWidth * 100;
+            this.configKonva.width = this.configPlot.width;
+            this.configPlot.height = this.plotHeight * 100;
+            this.configKonva.height = this.configPlot.height;
         },
-        createCircle () {
-            this.plantCircles.push("Plant")
-            console.log(this.plantCircles)
+
+        clearPlot () {
+            this.plantCircles = []
+            this.plantOrder = []
+            this.plantCount = -1
+            if (this.plantCount == -1) {
+                this.plantCount = 0
+            }
+            // For some reason setting plantCount to zero does not set the counter of any plants that were modified. i.e. If Pumpkin was four, it would not reset.
+            // Setting plantCount to any other number than zero does set all counters to that number, regardless of the number already displayed in the counter.
+            // Hence, the above code sets plantCount to -1 and then 0.
+
+        },
+
+        createCircle (plantId) {
+            this.plantCircles.push({
+                "x": Math.floor(Math.random() * (this.configPlot.width - 2 * this.plants[plantId].radius) + this.plants[plantId].radius),
+                "y": Math.floor(Math.random() * (this.configPlot.height - 2 * this.plants[plantId].radius) + this.plants[plantId].radius),
+                "radius": this.plants[plantId].radius,
+                "name": this.plants[plantId].plant,
+                "fill": this.plants[plantId].colour,
+                "stroke": "black",
+                "strokeWidth": 2,
+                "draggable": true,
+                "id": String(this.plants[plantId].id), 
+            }); 
+        },  
+
+        dragging(drag) {
+            // Finding the id of the circle that is being dragged
+            const circle = this.plantCircles.find((circle) => circle.id == drag.target.id());
+
+            // Getting new x and y position of circle and ensuring the circle stays inside the garden
+            const newX = Math.min(Math.max(circle.radius, drag.target.x()), this.configPlot.width - circle.radius);
+            const newY = Math.min(Math.max(circle.radius, drag.target.y()), this.configPlot.height - circle.radius);
+
+            drag.target.setAttrs({
+                x: newX,
+                y: newY,    
+            }); 
+
+        },
+        
         }
     }
-}
 </script>
 <style>
+li {
+  display: inline;
+}
 
+table {
+  margin-left: auto;
+  margin-right: auto;
+}
 </style>

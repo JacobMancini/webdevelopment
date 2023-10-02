@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "plant": "Apple",
+        "colour": "Green",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Red_apple.svg/2048px-Red_apple.svg.png",
+        "radius": 45,
+        "season": "Autumn"
+    },
+    {
+        "id": 2,
+        "plant": "Banana",
+        "colour": "OrangeRed",
+        "image": "https://i.pinimg.com/originals/fb/64/6c/fb646c29008eff6ab10cdcf277ff2f9d.png",
+        "radius": 5,
+        "season": "Autumn"
+    },
+    {
+        "id": 3,
+        "plant": "Plum",
+        "colour": "Indigo",
+        "image": "http://www.clker.com/cliparts/J/m/0/T/m/M/plum-md.png",
+        "radius": 45,
+        "season": "Spring"
+
+    },
+    {
+        "id": 4,
+        "plant": "Orange",
+        "colour": "Red",
+        "image": "https://creazilla-store.fra1.digitaloceanspaces.com/cliparts/13480/orange-fruits-clipart-md.png",
+        "radius": 90,
+        "season": "Summer"
+    }
+]
